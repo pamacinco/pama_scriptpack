@@ -8,23 +8,27 @@
 --Color 7 ^7 Gris
 --Color 8 ^8 Naranja
 
---Mensajes Automaticos
 local m = {}
 
-m.prefix = '[SISTEMA] '
+-- SISTEMA DE MENSAJES EN EL CHAT
+
+m.prefix = '[SISTEMA] ' -- PREFIJO DE LOS MENSAJES
 
 
 m.messages = {   
-    'El uso inadecuado del chat conlleva una expulsion del servidor.',
-    'Reporta cualquier bug en nuestro discord discord.gg/PeruRP',
-    'Puedes visitar nuestras tiendas vips de la ciudad.',
-    'Recuerda despues de hacer algun delito o alguna acción ilegal mandar /entorno',
-    'Recuerda que para llamar a un ems pueder poner /auxilio',
-    'Si tienes algun problema puedes mandar /report y un administrador te ayudara.'
+    'El uso inadecuado del chat conlleva una expulsion del servidor.', -- MENSAJES
+    'Reporta cualquier bug en nuestro discord discord.gg/PeruRP',  -- MENSAJES
+    'Puedes visitar nuestras tiendas vips de la ciudad.',  -- MENSAJES
+    'Recuerda despues de hacer algun delito o alguna acción ilegal mandar /entorno',  -- MENSAJES
+    'Recuerda que para llamar a un ems pueder poner /auxilio',  -- MENSAJES
+    'Si tienes algun problema puedes mandar /report y un administrador te ayudara.' -- MENSAJES
+   --'Mensaje.'  
+   --'Mensaje.'  
+   --'Mensaje.'  
 }
 
-local enableMessages = true
-local timeout = 1000 * 60 * 15
+local enableMessages = true -- MANTENER EN TRUE PARA QUE MANDE LOS MENSAJES
+local timeout = 1000 * 60 * 15 -- TIEMPO EN MANDARSE CADA MENSAJE
 
 Citizen.CreateThread(function()
     while true do
@@ -44,22 +48,22 @@ function chat(i)
 end
 
 
---NoNPCDrop
+-- LOS NPCs NO DROPEAN ARMAS
 local pedindex = {}
 
-function SetWeaponDrops() -- This function will set the closest entity to you as the variable entity.
+function SetWeaponDrops() -- 
     local handle, ped = FindFirstPed()
-    local finished = false -- FindNextPed will turn the first variable to false when it fails to find another ped in the index
+    local finished = false -- 
     repeat 
         if not IsEntityDead(ped) then
                 pedindex[ped] = {}
         end
-        finished, ped = FindNextPed(handle) -- first param returns true while entities are found
+        finished, ped = FindNextPed(handle) 
     until not finished
     EndFindPed(handle)
 
     for peds,_ in pairs(pedindex) do
-        if peds ~= nil then -- set all peds to not drop weapons on death.
+        if peds ~= nil then 
             SetPedDropsWeaponsWhenDead(peds, false) 
         end
     end
@@ -73,17 +77,17 @@ Citizen.CreateThread(function()
     end
 end)
 
---No Cops
+--No Policias
 Citizen.CreateThread(function()
 	while true do
 	Citizen.Wait(10)
-	local playerPed = GetPlayerPed(-1)
+	local playerPed = PlayerPedId()
 	local playerLocalisation = GetEntityCoords(playerPed)
 		ClearAreaOfCops(playerLocalisation.x, playerLocalisation.y, playerLocalisation.z, 4000.0)
 	end
 end)
 
---Rvoz
+--Rvoz Comando para que se te reinicie la voz (es necesario usar mumble-voip)
 Citizen.CreateThread(function()
     while ESX == nil do
   TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
@@ -115,10 +119,10 @@ RegisterCommand('resetearvoz', function()
   ESX.ShowNotification('Chat de voz reiniciado.')
 end)
 
---NoWeaponDrop
+-- Los NPCs No Dropean Armas
 Citizen.CreateThread(function()
     while true do
-        Citizen.Wait(0)
+        Citizen.Wait(4000)
         DisablePlayerVehicleRewards(PlayerId())
     end
 end)
@@ -136,7 +140,7 @@ Citizen.CreateThread(function()
     end
 end)
 
---/conducir
+--Comando /conducir para cambiar de asiento
 
 local disableShuffle = true
 function disableSeatShuffle(flag)
@@ -145,11 +149,11 @@ end
 
 Citizen.CreateThread(function()
 	while true do
-		Citizen.Wait(250)
-		if IsPedInAnyVehicle(GetPlayerPed(-1), false) and disableShuffle then
-			if GetPedInVehicleSeat(GetVehiclePedIsIn(GetPlayerPed(-1), false), 0) == GetPlayerPed(-1) then
-				if GetIsTaskActive(GetPlayerPed(-1), 165) then
-					SetPedIntoVehicle(GetPlayerPed(-1), GetVehiclePedIsIn(GetPlayerPed(-1), false), 0)
+		Citizen.Wait(5000)
+		if IsPedInAnyVehicle(PlayerPedId(), false) and disableShuffle then
+			if GetPedInVehicleSeat(GetVehiclePedIsIn(PlayerPedId(), false), 0) == PlayerPedId() then
+				if GetIsTaskActive(PlayerPedId(), 165) then
+					SetPedIntoVehicle(PlayerPedId(), GetVehiclePedIsIn(PlayerPedId(), false), 0)
 				end
 			end
 		end
@@ -158,7 +162,7 @@ end)
 
 RegisterNetEvent("SeatShuffle")
 AddEventHandler("SeatShuffle", function()
-	if IsPedInAnyVehicle(GetPlayerPed(-1), false) then
+	if IsPedInAnyVehicle(PlayerPedId(), false) then
 		disableSeatShuffle(false)
 		Citizen.Wait(5000)
 		disableSeatShuffle(true)
@@ -171,12 +175,12 @@ RegisterCommand("conducir", function(source, args, raw) --AQUI PUEDES CAMBIAR EL
     TriggerEvent("SeatShuffle")
 end, false) --DEBE ESTAR EN FALSO PARA QUE TODO EL MUNDO PUEDA HACERLO
 
---Señalar
+--Señalar Con La B
 local mp_pointing = false
 local keyPressed = false
 
 local function startPointing()
-    local ped = GetPlayerPed(-1)
+    local ped = PlayerPedId()
     RequestAnimDict("anim@mp_point")
     while not HasAnimDictLoaded("anim@mp_point") do
         Wait(150)
@@ -188,7 +192,7 @@ local function startPointing()
 end
 
 local function stopPointing()
-    local ped = GetPlayerPed(-1)
+    local ped = PlayerPedId()
     Citizen.InvokeNative(0xD01015C7316AE176, ped, "Stop")
     if not IsPedInjured(ped) then
         ClearPedSecondaryTask(ped)
@@ -244,7 +248,7 @@ Citizen.CreateThread(function()
             if not IsPedOnFoot(PlayerPedId()) then
                 stopPointing()
             else
-                local ped = GetPlayerPed(-1)
+                local ped = PlayerPedId()
                 local camPitch = GetGameplayCamRelativePitch()
                 if camPitch < -70.0 then
                     camPitch = -70.0
@@ -281,22 +285,22 @@ Citizen.CreateThread(function()
 end)
 
 
---Pause Title
+-- Titulo del menu del escape
 function AddTextEntry(key, value)
 	Citizen.InvokeNative(GetHashKey("ADD_TEXT_ENTRY"), key, value)
 end
 
 Citizen.CreateThread(function()
-  AddTextEntry('FE_THDR_GTAO', 'PeruRP / discord.gg/PeruRP')
+  AddTextEntry('FE_THDR_GTAO', 'Pama_scriptpack / discord.gg/FC6fkmrpuZ')
 end)
 
 
---Agachate conoselo
+-- Agacharte con el control
 local crouched = false
 
 Citizen.CreateThread( function()
     while true do 
-        Citizen.Wait( 1 )
+        Citizen.Wait( 2000 )
 
         local ped = PlayerPedId()
 
@@ -308,7 +312,7 @@ Citizen.CreateThread( function()
                     RequestAnimSet( "move_ped_crouched" )
 
                     while ( not HasAnimSetLoaded( "move_ped_crouched" ) ) do 
-                        Citizen.Wait( 100 )
+                        Citizen.Wait( 2000 )
                     end 
 
                     if ( crouched == true ) then 
@@ -355,7 +359,7 @@ end)
 -- Localizaciones.
 local zones = {
 	{ ['x'] = 235.3704, ['y'] = -775.2965, ['z'] = 10.08123},
-    --Comisaria { ['x'] = 453.9951, ['y'] = -995.6107, ['z'] = 10.15538},
+    { ['x'] = 453.9951, ['y'] = -995.6107, ['z'] = 10.15538},
     { ['x'] = 205.72,   ['y'] = -848.32,   ['z'] = 10.47},
     { ['x'] = 1642.58,  ['y'] = 2570.93,   ['z'] = 40.56},
     { ['x'] = 126.56,   ['y'] = -1071.24,  ['z'] = 20.19},
@@ -367,7 +371,7 @@ local zones = {
     { ['x'] = -40.87,   ['y'] = -1099.64,  ['z'] = 10.42},
     { ['x'] = -63.15,   ['y'] = -1118.43,  ['z'] = 10.43},
     { ['x'] = 266.83,   ['y'] = -959.48,   ['z'] = 10.22},
--- Inem antiguo    { ['x'] = -244.92,  ['y'] = -991.82,   ['z'] = 10.29},
+    { ['x'] = -244.92,  ['y'] = -991.82,   ['z'] = 10.29},
     { ['x'] = 1730.84,  ['y'] =  3714.95,  ['z'] = 10.14},
     { ['x'] = 902.66,   ['y'] = -176.83,   ['z'] = 10.19},
     { ['x'] = -797.25,  ['y'] = -221.13,   ['z'] = 10.08},
@@ -383,19 +387,15 @@ local notifIn = false
 local notifOut = false
 local closestZone = 1
 
---------------------------------------------------------------------------------------------------------------
---------------------------------------------------------------------------------------------------------------
-----------------   Obtener su distancia de cualquiera de las ubicaciones --------------------------------------
---------------------------------------------------------------------------------------------------------------
---------------------------------------------------------------------------------------------------------------
+-- Es Necesario Usar pNotify si no quieres modificar el script
 
 Citizen.CreateThread(function()
 	while not NetworkIsPlayerActive(PlayerId()) do
-		Citizen.Wait(0)
+		Citizen.Wait(4000)
 	end
 	
 	while true do
-		local playerPed = GetPlayerPed(-1)
+		local playerPed = PlayerPedId()
 		local x, y, z = table.unpack(GetEntityCoords(playerPed, true))
 		local minDistance = 100000
 		for i = 1, #zones, 1 do
@@ -416,8 +416,8 @@ Citizen.CreateThread(function()
 	end
 	
 	while true do
-		Citizen.Wait(0)
-		local player = GetPlayerPed(-1)
+		Citizen.Wait(4000)
+		local player = PlayerPedId()
 		local x,y,z = table.unpack(GetEntityCoords(player, true))
 		local dist = Vdist(zones[closestZone].x, zones[closestZone].y, zones[closestZone].z, x, y, z)
 	
@@ -427,7 +427,7 @@ Citizen.CreateThread(function()
 				ClearPlayerWantedLevel(PlayerId())
 				SetCurrentPedWeapon(player,GetHashKey("WEAPON_UNARMED"),true)
 				TriggerEvent("pNotify:SendNotification",{
-					text = "<b style='color:#1E90FF'>Estás en zona segura</b>",
+					text = "<b style='color:#1E90FF'>Estás en zona segura</b>", -- NOTIFICACCIÓN
 					type = "success",
 					timeout = (3000),
 					layout = "bottomright",
@@ -440,7 +440,7 @@ Citizen.CreateThread(function()
 			if not notifOut then
 				NetworkSetFriendlyFireOption(true)
 				TriggerEvent("pNotify:SendNotification",{
-					text = "<b style='color:#1E90FF'>Ya no estás en zona segura</b>",
+					text = "<b style='color:#1E90FF'>Ya no estás en zona segura</b>", -- NOTIFICACCIÓN
 					type = "error",
 					timeout = (3000),
 					layout = "bottomright",
@@ -457,7 +457,7 @@ Citizen.CreateThread(function()
 			if IsDisabledControlJustPressed(2, 37) then 
 				SetCurrentPedWeapon(player,GetHashKey("WEAPON_UNARMED"),true) 
 				TriggerEvent("pNotify:SendNotification",{
-					text = "<b style='color:#1E90FF'>No puedes usar armas en una zona segura</b>",
+					text = "<b style='color:#1E90FF'>No puedes usar armas en una zona segura</b>", -- NOTIFICACCIÓN
 					type = "error",
 					timeout = (3000),
 					layout = "bottomright",
@@ -467,7 +467,7 @@ Citizen.CreateThread(function()
 			if IsDisabledControlJustPressed(0, 106) then 
 				SetCurrentPedWeapon(player,GetHashKey("WEAPON_UNARMED"),true) 
 				TriggerEvent("pNotify:SendNotification",{
-					text = "<b style='color:#1E90FF'>No puedes hacer eso en una zona segura</b>",
+					text = "<b style='color:#1E90FF'>No puedes hacer eso en una zona segura</b>", -- NOTIFICACCIÓN
 					type = "error",
 					timeout = (3000),
 					layout = "bottomright",
@@ -481,3 +481,31 @@ Citizen.CreateThread(function()
 	 	end
 	end
 end)
+
+
+--/Limpiar comando que limpia el coche
+
+RegisterCommand('limpiar',function(source,args,rawCommand,text)
+    --Mensajes
+    TriggerEvent("chatMessage", "[Limpieza]", {131, 0, 255}, 'Limpiandose tu coche') --Mensaje Chat
+    print("Limpiando la suciedad") --Print en el F8 (lo puedes quitar)
+        --Funciones
+        WashDecalsFromVehicle(GetVehiclePedIsUsing(PlayerPedId()), 0.0)
+        SetVehicleDirtLevel(GetVehiclePedIsUsing(PlayerPedId()))
+end) 
+
+
+-- Cuando te subas a una moto no se te ponga casco automáticamente 
+
+Citizen.CreateThread( function()
+    SetPedHelmet(PlayerPedId(), false)
+    
+        while true do
+            Citizen.Wait(900000)        
+            local playerPed = PlayerPedId()
+            local playerVeh = GetVehiclePedIsUsing(playerPed)
+    
+            if gPlayerVeh ~= 30000 then RemovePedHelmet(playerPed,true) end
+        end
+        
+    end)
