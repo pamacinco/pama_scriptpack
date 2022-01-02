@@ -17,7 +17,7 @@ m.prefix = '[SISTEMA] ' -- PREFIJO DE LOS MENSAJES
 
 m.messages = {   
     'El uso inadecuado del chat conlleva una expulsion del servidor.', -- MENSAJES
-    'Reporta cualquier bug en nuestro discord discord.gg/PeruRP',  -- MENSAJES
+    'Reporta cualquier bug en nuestro discord discord.gg/FC6fkmrpuZ',  -- MENSAJES
     'Puedes visitar nuestras tiendas vips de la ciudad.',  -- MENSAJES
     'Recuerda despues de hacer algun delito o alguna acción ilegal mandar /entorno',  -- MENSAJES
     'Recuerda que para llamar a un ems pueder poner /auxilio',  -- MENSAJES
