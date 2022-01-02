@@ -119,27 +119,6 @@ RegisterCommand('resetearvoz', function()
   ESX.ShowNotification('Chat de voz reiniciado.')
 end)
 
--- Los NPCs No Dropean Armas
-Citizen.CreateThread(function()
-    while true do
-        Citizen.Wait(4000)
-        DisablePlayerVehicleRewards(PlayerId())
-    end
-end)
-
-Citizen.CreateThread(function()
-    local minimap = RequestScaleformMovie("minimap")
-    SetRadarBigmapEnabled(true, false)
-    Wait(0)
-    SetRadarBigmapEnabled(false, false)
-    while true do
-        Wait(0)
-        BeginScaleformMovieMethod(minimap, "SETUP_HEALTH_ARMOUR")
-        ScaleformMovieMethodAddParamInt(3)
-        EndScaleformMovieMethod()
-    end
-end)
-
 --Comando /conducir para cambiar de asiento
 
 local disableShuffle = true
